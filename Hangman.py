@@ -1,4 +1,5 @@
 from itertools import groupby
+import sys
 
 
 def censor(text, word):
@@ -16,8 +17,21 @@ def censor(text, word):
     return result
 
 
-actual_name = []
 c = 0
+
+
+def replay_game():
+    while True:
+        print('\n')
+        decision = input("Please enter Y to play again or any other key to Quit: ")
+        if decision == 'Y' or decision == 'y':
+            main()
+        else:
+            sys.exit()
+
+
+actual_name = []
+
 counter = 0
 
 char = ''
@@ -27,11 +41,11 @@ bb = []
 cc = []
 
 
-def compare(L1, L2):
-    for i in L1[:]:
-        if i in L2:
-            L2.remove(i)
-    return L2
+def compare(list1, list2):
+    for i in list1[:]:
+        if i in list2:
+            list2.remove(i)
+    return list2
 
 
 def user_input(player):
@@ -47,7 +61,7 @@ def user_input(player):
             if actual_name == '' or len(actual_name) <= 1:
                 print("Cannot be empty or less than 1 character")
             else:
-                print(censor(actual_name, actual_name))
+                # print(censor(actual_name, actual_name))
                 start_game()
                 c += 1
 
@@ -65,8 +79,7 @@ def start_game():
 
 
 def game_starts():
-    # global sublist, character
-    global sublist, var, aa, bb, cc, counter
+    global aa, bb, cc, counter
     actual_word = list(actual_name)
 
     hidden_name = []
@@ -74,6 +87,10 @@ def game_starts():
 
     head1 = []
     tail1 = []
+
+    aa.clear()
+    bb.clear()
+    cc.clear()
 
     for k, g in groupby(actual_word, key=lambda s: s.startswith(' ')):
         if k:
@@ -89,27 +106,18 @@ def game_starts():
             sub_result.append('_')
         hidden_name.append(sub_result)
 
-    # for i in actual_word:
-    #     if i == ' ':
-    #         actual_word.remove(' ')
-    #
-    #     hidden_name.append('_')
-    # for word in tail1:
-    #     length = len(word)
-    #     print("-" * length, end=" ")
-    # print("ACTUAL WORD: ", actual_word)
-    print("OUT: ", out)
-    print("HIDDEN: ", hidden_name)
+    # print("OUT: ", out)
+    # print("HIDDEN: ", hidden_name)
 
     is_game_over = False
     attempts = 0
-    max_attempts = 4
+    max_attempts = 5
 
     temp = []
     temp2 = []
 
     while not is_game_over:
-        print('you have {} left over. '.format((max_attempts - attempts + 1)))
+        print('you have {} left over. '.format((max_attempts - attempts)))
 
         # hidden_string = [''.join(chars) for chars in hidden_name]
         hidden_string = ''.join(str(hidden_name))
@@ -124,10 +132,12 @@ def game_starts():
         print('    |         ' + ('/ \\' if attempts > 3 else ''))
         print(' ----------     ')
 
-        if attempts == 4:
+        if attempts > 4:
             print('attempts: ', attempts)
             print("Game Over. :(")
-            break
+            print('ACTUAL WORD: ', out)
+            print('HIDDEN WORD: ', hidden_name)
+            replay_game()
         else:
             char = input("please enter your word: ").lower()
             counter = 0
@@ -143,13 +153,14 @@ def game_starts():
                         character = sublist[sublist_counter]
                         if character == char:
                             hidden_name[list_counter][sublist_counter] = character
+                            temp.append(character)
+                            aa = list(set(temp))
                             if out == hidden_name:
                                 print("Congrats, you win")
                                 is_game_over = True
-                                break
-                            temp.append(character)
-                            aa = list(set(temp))
-
+                                print('ACTUAL WORD: ', out)
+                                print('HIDDEN WORD: ', hidden_name)
+                                replay_game()
                         elif character != char:
                             temp2.append(char)
                             bb = list(set(temp2))
@@ -170,38 +181,40 @@ def game_starts():
                         attempts += 1
                         counter += 1
 
-    print("TEMP: ", temp)
-    print('ACTUAL WORD: ', out)
-    print('HIDDEN WORD: ', hidden_name)
 
-
-while True:
-    if c >= 1:
-        break
+def main():
+    print("====== Welcome to the Hangman Game ======")
     while True:
-        player1 = input("Please enter the name of player1. ")
-        if player1 == '':
-            print("Name of Player 1 cannot be blank")
-        else:
-            break
-    while True:
-        player2 = input("Please enter the name of player2. ")
-        if player2 == '':
-            print("name of Player2 cannot be blank")
-        else:
-            break
-    if player1 == player2:
-        print("Both names are not suppose to be the same")
-    else:
+        # if c == 1:
+        #     break
         while True:
-            first_player = input("Please choose who wants to enter the words first.  "
-                                 "\nPress 'A' for player 1 \nPress 'B' for player 2\n")
-
-            if first_player == 'A' or first_player == 'a':
-                user_input(player1)
-                break
-            elif first_player == 'B' or first_player == 'b':
-                user_input(player2)
-                break
+            player1 = input("Please enter the name of player1. ")
+            if player1 == '':
+                print("Name of Player 1 cannot be blank")
             else:
-                print("Please Press either A or B")
+                break
+        while True:
+            player2 = input("Please enter the name of player2. ")
+            if player2 == '':
+                print("name of Player2 cannot be blank")
+            else:
+                break
+        if player1 == player2:
+            print("Both names are not suppose to be the same")
+        else:
+            while True:
+                first_player = input("Please choose who wants to enter the words first.  "
+                                     "\nPress 'A' for player 1 \nPress 'B' for player 2\n")
+
+                if first_player == 'A' or first_player == 'a':
+                    user_input(player1)
+                    break
+                elif first_player == 'B' or first_player == 'b':
+                    user_input(player2)
+                    break
+                else:
+                    print("Please Press either A or B")
+
+
+if __name__ == '__main__':
+    main()
